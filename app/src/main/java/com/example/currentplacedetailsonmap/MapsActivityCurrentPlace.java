@@ -3,6 +3,7 @@ package com.example.currentplacedetailsonmap;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +26,7 @@ import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -51,9 +53,9 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
-    // A default location (Kirkland, Washington at Google HQ) and default zoom to use when location permission is
-    // not granted.
-    private final LatLng mDefaultLocation = new LatLng(-47.64929, -122.3527);
+    // Device's default location default location (Sydney, Australia)
+    //if permission to access user's device is denied.
+    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
@@ -95,9 +97,9 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Build the map.
+       //  Build the map.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+               .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
     }
@@ -118,6 +120,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
      * Sets up the options menu.
      * @param menu The options menu.
      * @return Boolean.
+     *
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -129,6 +132,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
      * Handles a click on the menu option to get a place.
      * @param item The menu item to handle.
      * @return Boolean.
+     * In other words, this is the "Get Location" button.
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -163,10 +167,10 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                 View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents,
                         (FrameLayout) findViewById(R.id.map), false);
 
-                TextView title = ((TextView) infoWindow.findViewById(R.id.title));
+                TextView title = (TextView) infoWindow.findViewById(R.id.title);
                 title.setText(marker.getTitle());
 
-                TextView snippet = ((TextView) infoWindow.findViewById(R.id.snippet));
+                TextView snippet = (TextView)infoWindow.findViewById(R.id.snippet);
                 snippet.setText(marker.getSnippet());
 
                 return infoWindow;
@@ -197,7 +201,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
+                        if (task.isSuccessful() &&  task.getResult() != null)  {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
@@ -253,7 +257,13 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionGranted = true;
+                }else{
+                    //permission denied boo! Disable functionality that depends on permission.
+                    mLocationPermissionGranted = false;
+                    //open default location with a marker (Sydney, Australia).
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
                 }
+                return;
             }
         }
         updateLocationUI();
