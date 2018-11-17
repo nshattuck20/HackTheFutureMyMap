@@ -3,9 +3,7 @@ Google Maps Android API Sample: Current Place Details
 
 This sample goes hand in hand with a tutorial for the Google Maps Android API:
 [Select Current Place and Show Details on a Map](https://developers.google.com/maps/documentation/android-api/current-place-tutorial).
-******EDIT ******
-For HACK_THE_FUTURE Hackathon Fri Nov 16 - Sat Nov 17. 
-Using the source code for Select Current Place and Show Details on a Map as starter code to MyMap app. 
+
 
 
 Prerequisites
