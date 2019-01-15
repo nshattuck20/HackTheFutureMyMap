@@ -1,3 +1,5 @@
+This was a simple demonstration I put together for an app named "MyMap". I built it at "Hack The Future" hosted by Galvanize. It demonstrates a simple location provider that pins a marker on a map. 
+
 Google Maps Android API Sample: Current Place Details
 =====================================================
 
